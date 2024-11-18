@@ -30,6 +30,14 @@ public class UserDetailsImpl implements UserDetails {
         return authorities;
     }
 
+    public Long getId(){
+        return user.getId();
+    }
+
+    public UserRole getUserRole(){
+        return user.getUserRole();
+    }
+
     @Override
     public String getPassword() {
         return user.getPassword();
@@ -37,7 +45,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getNickname();
+        return user.getEmail();
     }
 
     @Override

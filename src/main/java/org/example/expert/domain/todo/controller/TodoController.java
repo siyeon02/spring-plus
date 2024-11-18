@@ -2,6 +2,7 @@ package org.example.expert.domain.todo.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.expert.config.UserDetailsImpl;
 import org.example.expert.domain.common.annotation.Auth;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
@@ -21,7 +22,7 @@ public class TodoController {
 
     @PostMapping("/todos")
     public ResponseEntity<TodoSaveResponse> saveTodo(
-            @AuthenticationPrincipal AuthUser authUser,
+            @AuthenticationPrincipal UserDetailsImpl authUser,
             @Valid @RequestBody TodoSaveRequest todoSaveRequest
     ) {
         return ResponseEntity.ok(todoService.saveTodo(authUser, todoSaveRequest));

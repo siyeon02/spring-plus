@@ -3,9 +3,12 @@ package org.example.expert.domain.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.expert.config.UserDetailsImpl;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.common.entity.Timestamped;
 import org.example.expert.domain.user.enums.UserRole;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 @Entity
@@ -46,8 +49,8 @@ public class User extends Timestamped {
         this.userRole = userRole;
     }
 
-    public static User fromAuthUser(AuthUser authUser) {
-        return new User(authUser.getId(), authUser.getEmail(), authUser.getUserRole());
+    public static User fromAuthUser(@AuthenticationPrincipal UserDetailsImpl authUser) {
+        return new User(authUser.getId(), authUser.getUsername(), authUser.getUserRole());
     }
 
     public void changePassword(String password) {

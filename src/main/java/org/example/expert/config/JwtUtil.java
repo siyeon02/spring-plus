@@ -48,10 +48,12 @@ public class JwtUtil {
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(String.valueOf(userId))
-                        .claim("email", email)
+                        //.setSubject(String.valueOf(userId))
+                        .setSubject(email)
+                        .claim("userId", userId)
+                        //.claim("email", email)
                         .claim("nickname", nickname)
-                        .claim("userRole", userRole)
+                        .claim("userRole", userRole.name())
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
@@ -60,7 +62,7 @@ public class JwtUtil {
 
     public String substringToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
-            return tokenValue.substring(7).trim();
+            return tokenValue.substring(7);
         }
         throw new ServerException("Not Found Token");
     }
@@ -82,7 +84,6 @@ public class JwtUtil {
     // JWT Cookie 에 저장
     public void addJwtToCookie(String token, HttpServletResponse res) {
         token = URLEncoder.encode(token, StandardCharsets.UTF_8).replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
-        //String encodedToken = Base64.getUrlEncoder().encodeToString(token.getBytes(StandardCharsets.UTF_8));
 
         Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
         cookie.setPath("/");
@@ -108,14 +109,23 @@ public class JwtUtil {
 
     // 토큰에서 사용자 정보 가져오기
     public Claims getUserInfoFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        //return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key) // 서명 키 설정
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        log.info("Token Subject: {}", claims.getSubject()); // 여기에 이메일이 출력되어야 함
+        return claims;
     }
 
     // 요청 헤더에서 JWT 토큰을 추출하는 메서드 추가
     public String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(BEARER_PREFIX.length()).trim();
+            //return bearerToken.substring(BEARER_PREFIX.length()).trim();
+            return bearerToken;
         }
         return null;
     }
