@@ -36,11 +36,10 @@ public class TodoController {
 
     @GetMapping("/todos")
     public ResponseEntity<Page<TodoResponse>> getTodos(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String weather
+            @RequestParam(required = false) String weather,
+            Pageable pageable
     ) {
-        return ResponseEntity.ok(todoService.getTodos(page, size, weather));
+        return ResponseEntity.ok(todoService.getTodos(weather,pageable));
     }
 
     @GetMapping("/todos/{todoId}")
